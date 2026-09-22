@@ -91,7 +91,7 @@
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
 
             <p class="small text-muted mb-0">
-                © {{ date('Y') }} kATHIRAZHAGI Boutique. All Rights Reserved.
+                © {{ date('Y') }} KATHIRAZHAGI Boutique. All Rights Reserved.
             </p>
 
             <div class="d-flex gap-3">

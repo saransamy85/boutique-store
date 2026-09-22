@@ -19,15 +19,15 @@
 
     <style>
         :root {
-            --brand-primary: #003B32;
-            --brand-secondary: #D4AF37;
+            --brand-primary: #071C15; /* Deep Green from Logo */
+            --brand-secondary: #D4AF37; /* Gold from Logo */
             --brand-background: #FAF8F1;
             --brand-text: #242424;
-            --brand-accent: #C2185B;
-            --brand-border: #E8E2D3;
+            --brand-accent: #B01A45; /* Maroon/Plum from Saree */
+            --brand-border: #D4AF37;
 
-            --luna-olive: var(--brand-primary);
-            --luna-border: var(--brand-border);
+            --luna-olive: var(--brand-secondary);
+            --luna-border: var(--brand-secondary);
             --luna-muted: #6c757d;
         }
 
@@ -71,8 +71,8 @@
 
         .luna-navbar {
             min-height: 76px;
-            background: #fff;
-            border-bottom: 1px solid var(--luna-border);
+            background: var(--brand-primary);
+            border-bottom: 2px solid var(--brand-secondary);
             padding: 12px 0;
         }
 
@@ -82,7 +82,7 @@
             line-height: 1;
             letter-spacing: 5px;
             font-weight: 500;
-            color: #25271f;
+            color: var(--brand-secondary);
         }
 
         .luna-logo small {
@@ -103,13 +103,13 @@
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: .5px;
-            color: #303128;
+            color: #fff;
             padding: 10px 0;
             white-space: nowrap;
         }
 
         .luna-nav-links .nav-link:hover {
-            color: var(--luna-olive);
+            color: var(--brand-secondary);
         }
 
         .luna-icons {
@@ -121,18 +121,18 @@
         .luna-icons a {
             font-size: 18px;
             position: relative;
-            color: #292b23;
+            color: #fff;
         }
 
         .luna-icons a:hover {
-            color: var(--luna-olive);
+            color: var(--brand-secondary);
         }
 
         .cart-count {
             position: absolute;
             top: -8px;
             right: -10px;
-            background: var(--luna-olive);
+            background: var(--brand-accent);
             color: #fff;
             font-size: 9px;
             width: 16px;
@@ -146,9 +146,9 @@
         /* Common buttons */
 
         .btn-luna {
-            background: var(--luna-olive);
-            color: #fff;
-            border: 1px solid var(--luna-olive);
+            background: var(--brand-primary);
+            color: var(--brand-secondary);
+            border: 1px solid var(--brand-secondary);
             border-radius: 0;
             padding: 12px 22px;
             font-size: 11px;
@@ -158,9 +158,9 @@
         }
 
         .btn-luna:hover {
-            background: #41492a;
-            border-color: #41492a;
-            color: #fff;
+            background: var(--brand-secondary);
+            border-color: var(--brand-secondary);
+            color: var(--brand-primary);
         }
 
         .btn-luna-outline {
@@ -197,9 +197,10 @@
         /* Footer */
 
         .luna-footer {
-            background: #f6f5f0;
-            border-top: 1px solid var(--luna-border);
+            background: var(--brand-primary);
+            border-top: 2px solid var(--brand-secondary);
             padding: 45px 0 20px;
+            color: #fff;
         }
 
         .luna-footer h6 {
@@ -208,17 +209,23 @@
             font-weight: 700;
             text-transform: uppercase;
             margin-bottom: 18px;
+            color: var(--brand-secondary);
+        }
+        
+        .luna-footer p,
+        .luna-footer .text-muted {
+            color: #ddd !important;
         }
 
         .luna-footer a {
             display: block;
             font-size: 12px;
-            color: #66675f;
+            color: #ddd;
             margin-bottom: 10px;
         }
 
         .luna-footer a:hover {
-            color: var(--luna-olive);
+            color: var(--brand-secondary);
         }
 
         /* Mobile */
@@ -250,9 +257,10 @@
 
         .luna-hero {
             min-height: 420px;
-            background-color: #f4f1e9;
+            background-color: var(--brand-primary);
             background-image:
-                url('https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=1800&q=85');
+                linear-gradient(to right, rgba(7, 28, 21, 0.85) 0%, rgba(7, 28, 21, 0.4) 100%),
+                url('{{ asset("frontend/images/hero-bg.jpg") }}');
             background-size: cover;
             background-position: center 35%;
             background-repeat: no-repeat;
@@ -263,13 +271,15 @@
         .luna-hero-content {
             max-width: 480px;
             padding: 60px 0;
+            position: relative;
+            z-index: 2;
         }
 
         .luna-hero-label {
             font-size: 10px;
             font-weight: 700;
             letter-spacing: 2px;
-            color: var(--luna-olive);
+            color: var(--brand-secondary);
             text-transform: uppercase;
         }
 
@@ -278,15 +288,17 @@
             line-height: 1.05;
             font-weight: 500;
             margin: 18px 0;
-            color: #24251f;
+            color: #fff;
             letter-spacing: -1.5px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
         }
 
         .luna-hero p {
             font-size: 14px;
             line-height: 1.8;
-            color: #55564e;
+            color: #e8e8e8;
             max-width: 350px;
+            text-shadow: 0 1px 8px rgba(0,0,0,0.5);
         }
 
         /* Benefits Bar */

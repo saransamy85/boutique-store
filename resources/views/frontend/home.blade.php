@@ -52,6 +52,58 @@
 
 </section>
 
+{{-- ==========================================
+    CATEGORIES SECTION
+========================================== --}}
+<section class="luna-categories py-5" style="background-color: #fff;">
+    <div class="container">
+        <div class="luna-heading text-center mb-5">
+            <h2>Shop by Category</h2>
+            <span></span>
+        </div>
+        
+        <div class="row row-cols-2 row-cols-md-4 g-4 justify-content-center">
+            @forelse($categories as $category)
+            <div class="col text-center">
+                <a href="{{ route('shop', ['category' => $category->slug]) }}" class="text-decoration-none category-link">
+                    <div class="category-img-wrap rounded-circle overflow-hidden mx-auto mb-3" style="width: 150px; height: 150px; border: 2px solid var(--brand-secondary); box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s ease;">
+                        @if($category->image)
+                            <img src="{{ asset($category->image) }}" alt="{{ $category->name }}" class="img-fluid w-100 h-100" style="object-fit: cover; transition: transform 0.4s ease;">
+                        @else
+                            <div class="w-100 h-100 d-flex align-items-center justify-content-center" style="background-color: #f8f9fa;">
+                                <i class="bi bi-image text-muted fs-1"></i>
+                            </div>
+                        @endif
+                    </div>
+                    <h5 class="fw-bold text-uppercase mt-3" style="font-size: 14px; letter-spacing: 1.5px; color: var(--brand-text); transition: color 0.3s ease;">
+                        {{ $category->name }}
+                    </h5>
+                </a>
+            </div>
+            @empty
+            <div class="col-12 text-center text-muted">
+                No categories available.
+            </div>
+            @endforelse
+        </div>
+    </div>
+</section>
+
+@push('styles')
+<style>
+    .category-link:hover .category-img-wrap {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4) !important; /* Gold shadow */
+    }
+    .category-link:hover h5 {
+        color: var(--brand-secondary) !important;
+    }
+    .category-link:hover img {
+        transform: scale(1.1);
+    }
+</style>
+@endpush
+
 
 {{-- ==========================================
     2. SHOPPING BENEFITS

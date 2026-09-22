@@ -12,7 +12,7 @@
         {{-- MOBILE TOGGLE --}}
         <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#lunaNavbar" aria-controls="lunaNavbar" aria-expanded="false" aria-label="Toggle navigation">
 
-            <i class="bi bi-list fs-2"></i>
+            <i class="bi bi-list fs-2 text-white"></i>
 
         </button>
 
@@ -119,11 +119,11 @@
 
                 {{-- Wishlist --}}
 
-                <a href="{{ route('wishlist.index') }}" class="nav-link position-relative">
+                <a href="{{ route('wishlist.index') }}" class="nav-link position-relative text-white" style="font-size: 20px;">
 
                     ♡
 
-                    <span class="badge rounded-pill" style="background:#59663c;">
+                    <span class="badge rounded-pill" style="background: var(--brand-accent); font-size: 10px; position: absolute; top: 0; right: -5px;">
 
                         {{ count(session('luna_wishlist', [])) }}
 
