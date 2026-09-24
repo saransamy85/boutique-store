@@ -100,7 +100,7 @@
         </div>
         @endif
 
-        <form action="{{ route('checkout.store') }}" method="POST">
+        <form action="{{ route('checkout.store') }}" method="POST" enctype="multipart/form-data">
 
             @csrf
 
@@ -173,6 +173,53 @@
                             </label>
 
                             <textarea name="notes" class="form-control" rows="3">{{ old('notes') }}</textarea>
+                        </div>
+
+                        <hr class="my-5">
+
+                        <h4 class="mb-4">Payment Method</h4>
+
+                        <div class="mb-4">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="payment_method" id="paymentCod" value="cod" checked>
+                                <label class="form-check-label fw-semibold" for="paymentCod">
+                                    Cash on Delivery
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="payment_method" id="paymentOnline" value="online">
+                                <label class="form-check-label fw-semibold" for="paymentOnline">
+                                    Online Payment
+                                </label>
+                            </div>
+                        </div>
+
+                        <div id="onlinePaymentDetails" style="display: none;">
+                            <h5 class="mb-3">Scan to Pay</h5>
+                            <div class="row align-items-center mb-4">
+                                <div class="col-md-5 text-center mb-3 mb-md-0">
+                                    <div class="p-3 border rounded" style="background-color: #f9f9f9;">
+                                        {{-- Placeholder for actual QR code, use a generic bi-qr-code if image is not available --}}
+                                        <i class="bi bi-qr-code" style="font-size: 8rem; color: #59663c;"></i>
+                                        <p class="mt-2 mb-0 fw-semibold text-muted">Scan to Pay</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-7">
+                                    <p class="mb-2"><strong>Bank Name:</strong> State Bank of India</p>
+                                    <p class="mb-2"><strong>Account Name:</strong> KATHIRAZHAGI Boutique</p>
+                                    <p class="mb-2"><strong>Account Number:</strong> 1234567890</p>
+                                    <p class="mb-0"><strong>IFSC Code:</strong> SBIN0001234</p>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="checkout-label">Upload Payment Screenshot *</label>
+                                <input type="file" name="payment_screenshot" id="paymentScreenshotInput" class="form-control" accept="image/*">
+                                <small class="text-muted d-block mt-1">Please complete the payment and upload the screenshot as proof.</small>
+                                @error('payment_screenshot')
+                                <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
                         </div>
 
                     </div>
@@ -265,5 +312,32 @@
     </div>
 
 </section>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const paymentCod = document.getElementById('paymentCod');
+        const paymentOnline = document.getElementById('paymentOnline');
+        const onlinePaymentDetails = document.getElementById('onlinePaymentDetails');
+        const paymentScreenshotInput = document.getElementById('paymentScreenshotInput');
+
+        function togglePaymentDetails() {
+            if (paymentOnline.checked) {
+                onlinePaymentDetails.style.display = 'block';
+                paymentScreenshotInput.required = true;
+            } else {
+                onlinePaymentDetails.style.display = 'none';
+                paymentScreenshotInput.required = false;
+            }
+        }
+
+        paymentCod.addEventListener('change', togglePaymentDetails);
+        paymentOnline.addEventListener('change', togglePaymentDetails);
+        
+        // Initial state
+        togglePaymentDetails();
+    });
+</script>
+@endpush
 
 @endsection

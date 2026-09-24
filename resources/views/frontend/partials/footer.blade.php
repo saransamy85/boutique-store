@@ -22,7 +22,7 @@
 
                 <h6>Customer Care</h6>
 
-                <a href="#">Contact Us</a>
+                <a href="{{ url('/') }}#contact-us">Contact Us</a>
                 <a href="#">Shipping & Returns</a>
                 <a href="#">Size Guide</a>
                 <a href="#">FAQs</a>

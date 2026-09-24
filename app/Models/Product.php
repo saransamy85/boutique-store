@@ -38,7 +38,15 @@ class Product extends Model
         return $this->belongsTo(Category::class);
     }
     public function variants(): HasMany
-{
-    return $this->hasMany(ProductVariant::class);
-}
+    {
+        return $this->hasMany(ProductVariant::class);
+    }
+
+    public function getStockAttribute($value)
+    {
+        if ($this->variants()->count() > 0) {
+            return $this->variants()->sum('stock');
+        }
+        return $value;
+    }
 }

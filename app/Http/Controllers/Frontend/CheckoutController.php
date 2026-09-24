@@ -86,6 +86,8 @@ class CheckoutController extends Controller
             'pincode' => 'required|string|max:10',
 
             'notes' => 'nullable|string|max:1000',
+            'payment_method' => 'required|in:cod,online',
+            'payment_screenshot' => 'required_if:payment_method,online|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $cart = session()->get('luna_cart', []);
@@ -95,8 +97,16 @@ class CheckoutController extends Controller
                 ->route('cart.index')
                 ->with('error', 'Your shopping cart is empty.');
         }
+        
+        $screenshotPath = null;
+        if ($validated['payment_method'] === 'online' && $request->hasFile('payment_screenshot')) {
+            $file = $request->file('payment_screenshot');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/payments'), $filename);
+            $screenshotPath = 'uploads/payments/' . $filename;
+        }
 
-        $order = DB::transaction(function () use ($cart, $validated) {
+        $order = DB::transaction(function () use ($cart, $validated, $screenshotPath) {
 
             $products = Product::whereIn('id', array_keys($cart))
                 ->get()
@@ -129,6 +139,23 @@ class CheckoutController extends Controller
                     'quantity' => $quantity,
                     'total' => $itemTotal,
                 ];
+
+                // Decrement stock
+                if ($product->variants()->count() > 0) {
+                    $remaining = $quantity;
+                    foreach ($product->variants as $variant) {
+                        if ($remaining <= 0) break;
+                        if ($variant->stock > 0) {
+                            $take = min($variant->stock, $remaining);
+                            $variant->stock -= $take;
+                            $variant->save();
+                            $remaining -= $take;
+                        }
+                    }
+                } else {
+                    $product->stock -= $quantity;
+                    $product->save();
+                }
             }
 
             // Free shipping for now
@@ -151,8 +178,9 @@ class CheckoutController extends Controller
                 'shipping_charge' => $shipping,
                 'total_amount' => $subtotal + $shipping,
 
-                'payment_method' => 'pending',
-                'payment_status' => 'pending',
+                'payment_method' => $validated['payment_method'],
+                'payment_status' => $validated['payment_method'] === 'online' ? 'uploaded' : 'pending',
+                'payment_screenshot' => $screenshotPath,
                 'order_status' => 'pending',
 
                 'notes' => $validated['notes'] ?? null,

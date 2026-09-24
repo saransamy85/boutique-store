@@ -509,7 +509,56 @@
 
 
 {{-- ==========================================
-    6. NEWSLETTER
+    6. CONTACT US
+========================================== --}}
+
+<section class="container py-5" id="contact-us">
+
+    <div class="luna-heading text-center mb-4">
+        <h2>Contact Us</h2>
+        <span></span>
+    </div>
+
+    <div class="row justify-content-center g-4">
+        
+        {{-- India Address --}}
+        <div class="col-md-6 col-lg-5 text-center">
+            <div class="card border-0 shadow-sm h-100" style="background-color: #f8f9fa;">
+                <div class="card-body p-5">
+                    <i class="bi bi-geo-alt fs-1 mb-3 d-inline-block" style="color: var(--brand-secondary, #d4af37);"></i>
+                    <h4 class="mb-4">Home address for India</h4>
+                    <p class="mb-1 fs-5 text-muted">1/150 agaraharam street ,</p>
+                    <p class="mb-1 fs-5 text-muted">Mullippallam,</p>
+                    <p class="mb-1 fs-5 text-muted">Sholavanthan ,</p>
+                    <p class="mb-0 fs-5 text-muted">Pincode 625207</p>
+                </div>
+            </div>
+        </div>
+
+        {{-- UK Address --}}
+        <div class="col-md-6 col-lg-5 text-center">
+            <div class="card border-0 shadow-sm h-100" style="background-color: #f8f9fa;">
+                <div class="card-body p-5">
+                    <i class="bi bi-globe fs-1 mb-3 d-inline-block" style="color: var(--brand-secondary, #d4af37);"></i>
+                    <h4 class="mb-4">UK Location</h4>
+                    <p class="mb-2 fs-5 text-muted"><strong>Location:</strong> Stafford, UK</p>
+                    <p class="mb-2 fs-5 text-muted"><strong>Owner No:</strong> <a href="tel:+447393129732" class="text-decoration-none text-muted">+44 7393 129732</a></p>
+                    <div class="mt-4">
+                        <span class="badge text-uppercase p-2" style="background-color: var(--brand-secondary, #d4af37); font-size: 0.85rem; letter-spacing: 1px;">
+                            International Shipping
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+
+{{-- ==========================================
+    7. NEWSLETTER
 ========================================== --}}
 
 <section class="container py-4" id="luna-newsletter">

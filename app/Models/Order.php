@@ -22,6 +22,7 @@ class Order extends Model
         'total_amount',
         'payment_method',
         'payment_status',
+        'payment_screenshot',
         'order_status',
         'notes',
     ];

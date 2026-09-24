@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Order;
 
 class OrderController extends Controller
 {
@@ -12,7 +13,20 @@ class OrderController extends Controller
      */
     public function index()
     {
-        //
+        $orders = Order::with('items')->latest()->get();
+
+        $totalOrders = Order::count();
+        $pendingOrders = Order::where('order_status', 'pending')->count();
+        $dispatchedOrders = Order::where('order_status', 'dispatched')->count();
+        $deliveredOrders = Order::where('order_status', 'delivered')->count();
+
+        return view('admin.orders.index', compact(
+            'orders',
+            'totalOrders',
+            'pendingOrders',
+            'dispatchedOrders',
+            'deliveredOrders'
+        ));
     }
 
     /**
@@ -52,14 +66,23 @@ class OrderController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
-    }
+        $order = \App\Models\Order::findOrFail($id);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $request->validate([
+            'payment_status' => 'nullable|string',
+            'order_status' => 'nullable|string',
+        ]);
+
+        if ($request->has('payment_status')) {
+            $order->payment_status = $request->payment_status;
+        }
+
+        if ($request->has('order_status')) {
+            $order->order_status = $request->order_status;
+        }
+
+        $order->save();
+
+        return back()->with('success', 'Order status updated successfully!');
     }
 }

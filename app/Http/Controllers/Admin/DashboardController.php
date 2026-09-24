@@ -26,8 +26,8 @@ class DashboardController extends Controller
         $totalRevenue = Order::sum('total_amount');
 
         // Recent Orders
-        $recentOrders = Order::latest()
-            ->take(5)
+        $recentOrders = Order::with('items')->latest()
+            ->take(10)
             ->get();
 
         return view('admin.dashboard', compact(

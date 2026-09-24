@@ -180,15 +180,15 @@
             <i class="bi bi-bag"></i> Products
         </a>
 
-        <a href="#">
+        <a href="{{ route('admin.inventory.index') }}" class="{{ request()->routeIs('admin.inventory.*') ? 'active' : '' }}">
             <i class="bi bi-box-seam"></i> Inventory
         </a>
 
-        <a href="#">
+        <a href="{{ route('admin.orders.index') }}" class="{{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
             <i class="bi bi-cart3"></i> Orders
         </a>
 
-        <a href="#">
+        <a href="{{ route('admin.customers.index') }}" class="{{ request()->routeIs('admin.customers.*') ? 'active' : '' }}">
             <i class="bi bi-people"></i> Customers
         </a>
 
