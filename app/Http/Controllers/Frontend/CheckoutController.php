@@ -9,6 +9,8 @@ use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use App\Mail\OrderPlaced;
+use Illuminate\Support\Facades\Mail;
 
 class CheckoutController extends Controller
 {
@@ -190,6 +192,16 @@ class CheckoutController extends Controller
 
             return $order;
         });
+
+        try {
+            // Admin notification
+            Mail::to('cloudinfo2020@gmail.com')->send(new OrderPlaced($order));
+            
+            // Customer notification
+            Mail::to($order->email)->send(new \App\Mail\CustomerThankYou($order));
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Failed to send order email: ' . $e->getMessage());
+        }
 
         // Clear cart only after successful order creation
         session()->forget('luna_cart');

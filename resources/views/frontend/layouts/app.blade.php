@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>@yield('title', 'Kathirazhaki Boutique | Effortless Style')</title>
+    <link rel="icon" type="image/x-icon" href="{{ asset('frontend/images/favicon.ico') }}">
 
     <meta name="description" content="@yield('meta_description', 'Discover timeless fashion and effortless everyday style at Luna Boutique.')">
 
@@ -19,12 +20,15 @@
 
     <style>
         :root {
-            --brand-primary: #071C15; /* Deep Green from Logo */
-            --brand-secondary: #D4AF37; /* Gold from Logo */
+            --brand-primary: #2e102f;
+            /* Deep Purple from Logo */
+            --brand-secondary: #d4af37;
+            /* Gold from Logo */
             --brand-background: #FAF8F1;
             --brand-text: #242424;
-            --brand-accent: #B01A45; /* Maroon/Plum from Saree */
-            --brand-border: #D4AF37;
+            --brand-accent: #8b4b7c;
+            /* Light Purple from Logo */
+            --brand-border: #d4af37;
 
             --luna-olive: var(--brand-secondary);
             --luna-border: var(--brand-secondary);
@@ -164,8 +168,8 @@
         }
 
         .btn-luna-outline {
-            border: 1px solid #55594a;
-            color: #303128;
+            border: 1px solid #4a3b49;
+            color: #2e102f;
             border-radius: 0;
             padding: 12px 22px;
             font-size: 11px;
@@ -197,7 +201,11 @@
         /* Footer */
 
         .luna-footer {
-            background: var(--brand-primary);
+            background-color: var(--brand-primary);
+            background-image: linear-gradient(to right, rgba(46, 16, 47, 0.95) 0%, rgba(46, 16, 47, 0.75) 100%),
+            url('{{ asset("frontend/images/hero-bg2.png") }}');
+            background-size: cover;
+            background-position: center;
             border-top: 2px solid var(--brand-secondary);
             padding: 45px 0 20px;
             color: #fff;
@@ -211,7 +219,7 @@
             margin-bottom: 18px;
             color: var(--brand-secondary);
         }
-        
+
         .luna-footer p,
         .luna-footer .text-muted {
             color: #ddd !important;
@@ -256,13 +264,12 @@
         /* Hero Section */
 
         .luna-hero {
-            min-height: 420px;
+            min-height: 450px;
             background-color: var(--brand-primary);
-            background-image:
-                linear-gradient(to right, rgba(7, 28, 21, 0.85) 0%, rgba(7, 28, 21, 0.4) 100%),
-                url('{{ asset("frontend/images/hero-bg.jpg") }}');
+            background-image: linear-gradient(to right, rgba(46, 16, 47, 0.95) 0%, rgba(46, 16, 47, 0.4) 100%),
+            url('{{ asset("frontend/images/hero-bg1.jpg") }}');
             background-size: cover;
-            background-position: center 35%;
+            background-position: center 10%;
             background-repeat: no-repeat;
             display: flex;
             align-items: center;
@@ -290,7 +297,7 @@
             margin: 18px 0;
             color: #fff;
             letter-spacing: -1.5px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
         }
 
         .luna-hero p {
@@ -298,7 +305,7 @@
             line-height: 1.8;
             color: #e8e8e8;
             max-width: 350px;
-            text-shadow: 0 1px 8px rgba(0,0,0,0.5);
+            text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
         }
 
         /* Benefits Bar */
@@ -553,13 +560,15 @@
 
         @media(max-width: 767px) {
             .luna-hero {
-                min-height: 400px;
-                background-position: 62% center;
+                min-height: 420px;
+                background-position: center 15%;
+                padding-top: 0;
             }
 
             .luna-hero-content {
                 padding: 45px 15px;
-                max-width: 65%;
+                max-width: 85%;
+                text-align: left;
             }
 
             .luna-hero h1 {

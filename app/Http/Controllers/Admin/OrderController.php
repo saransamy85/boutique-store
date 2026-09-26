@@ -8,25 +8,19 @@ use App\Models\Order;
 
 class OrderController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         $orders = Order::with('items')->latest()->get();
-
         $totalOrders = Order::count();
         $pendingOrders = Order::where('order_status', 'pending')->count();
         $dispatchedOrders = Order::where('order_status', 'dispatched')->count();
         $deliveredOrders = Order::where('order_status', 'delivered')->count();
 
-        return view('admin.orders.index', compact(
-            'orders',
-            'totalOrders',
-            'pendingOrders',
-            'dispatchedOrders',
-            'deliveredOrders'
-        ));
+        return view('admin.orders.index', compact('orders', 'totalOrders', 'pendingOrders', 'dispatchedOrders', 'deliveredOrders'));
     }
 
     /**

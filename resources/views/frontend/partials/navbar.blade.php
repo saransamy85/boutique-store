@@ -4,9 +4,7 @@
 
         {{-- LOGO --}}
         <a href="{{ route('home') }}" class="navbar-brand d-flex align-items-center">
-
-            <img src="{{ asset('frontend/images/logo.png') }}" alt="Kathirazhagi Boutique" style="height:75px; width:auto;">
-
+            <img src="{{ asset('frontend/images/logo.jpg') }}" alt="Kathirazhagi Boutique" class="rounded-circle shadow-sm" style="height:75px; width:75px; object-fit:cover; border: 2px solid var(--brand-secondary);">
         </a>
 
         {{-- MOBILE TOGGLE --}}

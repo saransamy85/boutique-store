@@ -11,9 +11,7 @@
 ========================================== --}}
 
 <section class="luna-hero">
-
     <div class="container">
-
         <div class="luna-hero-content">
 
             <span class="luna-hero-label">
@@ -33,23 +31,17 @@
             <div class="d-flex flex-wrap gap-2 mt-4">
 
                 <a href="{{ route('shop', ['sort' => 'latest']) }}" class="btn btn-luna">
-
                     Shop New Arrivals
-
                 </a>
 
-                <a href="{{ route('shop') }}" class="btn btn-luna-outline">
-
+                <a href="{{ route('shop') }}" class="btn btn-luna-outline" style="border-color: #fff; color: #fff;">
                     Shop Dresses
-
                 </a>
 
             </div>
 
         </div>
-
     </div>
-
 </section>
 
 {{-- ==========================================

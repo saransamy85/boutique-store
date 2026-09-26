@@ -72,10 +72,10 @@ class CategoryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Category $category)
     {
         //
-         return view('admin.categories.edit', compact('category'));
+         return view('admin.categories.show', compact('category'));
     }
 
     /**
@@ -134,7 +134,7 @@ class CategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Category $category)
     {
         //
 
