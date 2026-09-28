@@ -33,6 +33,17 @@ class ProductVariantController extends Controller
 
     public function store(Request $request, Product $product)
     {
+        if (!$request->filled('sku')) {
+            $generatedSku = $product->sku;
+            if ($request->color) $generatedSku .= '-' . \Illuminate\Support\Str::slug($request->color);
+            if ($request->size) $generatedSku .= '-' . \Illuminate\Support\Str::slug($request->size);
+            
+            if (\App\Models\ProductVariant::where('sku', $generatedSku)->exists()) {
+                $generatedSku .= '-' . strtoupper(\Illuminate\Support\Str::random(4));
+            }
+            $request->merge(['sku' => $generatedSku]);
+        }
+
         $validated = $request->validate([
             'size' => ['nullable', 'string', 'max:30'],
             'color' => ['nullable', 'string', 'max:50'],
@@ -49,11 +60,27 @@ class ProductVariantController extends Controller
             'stock' => ['required', 'integer', 'min:0'],
 
             'is_active' => ['nullable', 'boolean'],
+            'images.*' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ]);
 
         $validated['is_active'] = $request->boolean('is_active');
 
-        $product->variants()->create($validated);
+        $variant = $product->variants()->create($validated);
+
+        if ($request->hasFile('images')) {
+            $folder = public_path('uploads/products/variants');
+            if (!file_exists($folder)) {
+                mkdir($folder, 0755, true);
+            }
+            foreach ($request->file('images') as $image) {
+                $filename = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+                $image->move($folder, $filename);
+                $variant->images()->create([
+                    'product_id' => $product->id,
+                    'image_path' => 'uploads/products/variants/' . $filename,
+                ]);
+            }
+        }
 
         return redirect()
             ->route('admin.products.variants.index', $product->id)
@@ -77,6 +104,17 @@ class ProductVariantController extends Controller
     ) {
         abort_unless($variant->product_id === $product->id, 404);
 
+        if (!$request->filled('sku')) {
+            $generatedSku = $product->sku;
+            if ($request->color) $generatedSku .= '-' . \Illuminate\Support\Str::slug($request->color);
+            if ($request->size) $generatedSku .= '-' . \Illuminate\Support\Str::slug($request->size);
+            
+            if (\App\Models\ProductVariant::where('sku', $generatedSku)->where('id', '!=', $variant->id)->exists()) {
+                $generatedSku .= '-' . strtoupper(\Illuminate\Support\Str::random(4));
+            }
+            $request->merge(['sku' => $generatedSku]);
+        }
+
         $validated = $request->validate([
             'size' => ['nullable', 'string', 'max:30'],
             'color' => ['nullable', 'string', 'max:50'],
@@ -94,11 +132,27 @@ class ProductVariantController extends Controller
             'stock' => ['required', 'integer', 'min:0'],
 
             'is_active' => ['nullable', 'boolean'],
+            'images.*' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ]);
 
         $validated['is_active'] = $request->boolean('is_active');
 
         $variant->update($validated);
+
+        if ($request->hasFile('images')) {
+            $folder = public_path('uploads/products/variants');
+            if (!file_exists($folder)) {
+                mkdir($folder, 0755, true);
+            }
+            foreach ($request->file('images') as $image) {
+                $filename = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+                $image->move($folder, $filename);
+                $variant->images()->create([
+                    'product_id' => $product->id,
+                    'image_path' => 'uploads/products/variants/' . $filename,
+                ]);
+            }
+        }
 
         return redirect()
             ->route('admin.products.variants.index', $product->id)

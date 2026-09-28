@@ -14,7 +14,7 @@
 
         <div class="card-body">
 
-            <form action="{{ route('admin.products.variants.store', $product->id) }}" method="POST">
+            <form action="{{ route('admin.products.variants.store', $product->id) }}" method="POST" enctype="multipart/form-data">
 
                 @include('admin.products.variants._form')
 

@@ -45,7 +45,7 @@ class HomeController extends Controller
     $product = Product::with([
         'category',
         'variants' => function ($query) {
-            $query->where('is_active', 1)
+            $query->with('images')->where('is_active', 1)
                   ->orderBy('size')
                   ->orderBy('color');
         }

@@ -21,6 +21,21 @@
         padding: 20px;
     }
 
+    .variant-thumbnail {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        cursor: pointer;
+        border: 2px solid transparent;
+        border-radius: 8px;
+        background: #FAF8F1;
+        transition: .3s;
+    }
+
+    .variant-thumbnail.active, .variant-thumbnail:hover {
+        border-color: #003B32;
+    }
+
     .product-info {
         padding: 20px 15px 20px 45px;
     }
@@ -223,8 +238,29 @@
 
                 <div class="product-image-box">
 
-                    <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="product-main-image">
+                    <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="product-main-image" id="mainProductImage">
 
+                </div>
+                
+                <div class="d-flex flex-wrap gap-2 mt-3" id="variantThumbnailsContainer">
+                    @php
+                        // Collect all unique images
+                        $allImages = collect([$product->image]);
+                        if($product->variants) {
+                            foreach($product->variants as $variant) {
+                                if($variant->images) {
+                                    foreach($variant->images as $img) {
+                                        $allImages->push($img->image_path);
+                                    }
+                                }
+                            }
+                        }
+                        $allImages = $allImages->unique()->values();
+                    @endphp
+
+                    @foreach($allImages as $index => $imagePath)
+                        <img src="{{ asset($imagePath) }}" class="variant-thumbnail {{ $index === 0 ? 'active' : '' }}" onclick="document.getElementById('mainProductImage').src=this.src; window.updateActiveThumbnail(this)">
+                    @endforeach
                 </div>
 
             </div>
@@ -418,6 +454,7 @@
                     'color' => $variant->color,
                     'price' => $variant->price ?? $product->sale_price ?? $product->price,
                     'stock' => (int) $variant->stock,
+                    'images' => $variant->images->pluck('image_path')->map(fn($path) => asset($path))->toArray()
                 ];
             })->values();
         @endphp
@@ -459,6 +496,45 @@
 
             selectedVariantInput.value = '';
 
+            // Update Images
+            let matchingVariants = variants;
+            if (selectedColor) {
+                matchingVariants = matchingVariants.filter(v => v.color === selectedColor);
+            }
+            if (selectedSize) {
+                matchingVariants = matchingVariants.filter(v => v.size === selectedSize);
+            }
+            
+            let imagesToShow = [];
+            matchingVariants.forEach(v => {
+                if (v.images && v.images.length > 0) {
+                    imagesToShow.push(...v.images);
+                }
+            });
+            
+            imagesToShow = [...new Set(imagesToShow)]; // Deduplicate
+            
+            if (imagesToShow.length === 0) {
+                imagesToShow = ['{{ asset($product->image) }}'];
+            }
+            
+            const thumbnailsContainer = document.getElementById('variantThumbnailsContainer');
+            const mainImage = document.getElementById('mainProductImage');
+            
+            thumbnailsContainer.innerHTML = '';
+            mainImage.src = imagesToShow[0];
+            
+            imagesToShow.forEach(function(imgSrc, index) {
+                const img = document.createElement('img');
+                img.src = imgSrc;
+                img.className = 'variant-thumbnail' + (index === 0 ? ' active' : '');
+                img.onclick = function() {
+                    mainImage.src = this.src;
+                    window.updateActiveThumbnail(this);
+                };
+                thumbnailsContainer.appendChild(img);
+            });
+
             if (!variant) {
 
                 stockStatus.textContent = 'Please select available options';
@@ -466,6 +542,7 @@
 
                 addToCartBtn.disabled = true;
 
+                updateAvailableOptions();
                 return;
             }
 
@@ -496,6 +573,13 @@
 
             updateAvailableOptions();
         }
+
+        window.updateActiveThumbnail = function(clickedElement) {
+            document.querySelectorAll('.variant-thumbnail').forEach(function(el) {
+                el.classList.remove('active');
+            });
+            clickedElement.classList.add('active');
+        };
 
         function updateAvailableOptions() {
 

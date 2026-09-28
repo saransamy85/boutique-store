@@ -14,7 +14,7 @@
 
         <div class="card-body">
 
-            <form action="{{ route('admin.products.variants.update', [$product->id, $variant->id]) }}" method="POST">
+            <form action="{{ route('admin.products.variants.update', [$product->id, $variant->id]) }}" method="POST" enctype="multipart/form-data">
 
                 @method('PUT')
 

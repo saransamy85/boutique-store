@@ -45,9 +45,9 @@
     {{-- SKU --}}
     <div class="col-md-6">
 
-        <label class="form-label">Variant SKU *</label>
+        <label class="form-label">Variant SKU (Optional)</label>
 
-        <input type="text" name="sku" class="form-control" placeholder="Example: FK-M-GRN" value="{{ old('sku', $variant->sku ?? '') }}" required>
+        <input type="text" name="sku" class="form-control" placeholder="Leave blank to auto-generate" value="{{ old('sku', $variant->sku ?? '') }}">
 
         @error('sku')
         <small class="text-danger">{{ $message }}</small>
@@ -100,6 +100,27 @@
 
     </div>
 
+</div>
+
+<div class="row mt-3">
+    <div class="col-12">
+        <label class="form-label">Variant Images (Optional)</label>
+        <input type="file" name="images[]" class="form-control" multiple accept="image/*">
+        <small class="text-muted">You can select multiple images. These images represent this specific color and size.</small>
+        @error('images.*')
+        <br><small class="text-danger">{{ $message }}</small>
+        @enderror
+
+        @if(isset($variant) && $variant->images && $variant->images->count() > 0)
+        <div class="d-flex flex-wrap gap-2 mt-3">
+            @foreach($variant->images as $image)
+            <div class="position-relative">
+                <img src="{{ asset($image->image_path) }}" alt="Variant Image" class="img-thumbnail" style="width: 100px; height: 100px; object-fit: cover;">
+            </div>
+            @endforeach
+        </div>
+        @endif
+    </div>
 </div>
 
 <div class="mt-4">
