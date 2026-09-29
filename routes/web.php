@@ -9,6 +9,9 @@ use App\Http\Controllers\Frontend\CartController;
 use App\Http\Controllers\Frontend\WishlistController;
 use App\Http\Controllers\Frontend\CheckoutController;
 use App\Http\Controllers\Admin\ProductVariantController;
+use App\Http\Controllers\Admin\InventoryController;
+use App\Http\Controllers\Admin\CustomerController;
+use App\Http\Controllers\Admin\OrderController;
 
 
 
@@ -104,10 +107,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('products', ProductController::class)->except(['show']);
         Route::resource('products.variants',ProductVariantController::class)->except(['show'])->names('products.variants');
 
-        Route::get('/inventory', [\App\Http\Controllers\Admin\InventoryController::class, 'index'])->name('inventory.index');
-        Route::get('/customers', [\App\Http\Controllers\Admin\CustomerController::class, 'index'])->name('customers.index');
-        Route::get('/orders', [\App\Http\Controllers\Admin\OrderController::class, 'index'])->name('orders.index');
-        Route::put('/orders/{id}', [\App\Http\Controllers\Admin\OrderController::class, 'update'])->name('orders.update');
+        Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
+        Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');
+        Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+        Route::put('/orders/{id}', [OrderController::class, 'update'])->name('orders.update');
     });
 
 });
