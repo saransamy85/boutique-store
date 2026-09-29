@@ -242,6 +242,15 @@
                     </div>
                 </div>
 
+                <div class="ms-2 border-start ps-3">
+                    <form action="{{ route('admin.logout') }}" method="POST" class="m-0 p-0">
+                        @csrf
+                        <button type="submit" class="btn btn-sm btn-outline-danger d-flex align-items-center gap-1" title="Logout">
+                            <i class="bi bi-box-arrow-right"></i> <span class="d-none d-md-inline">Logout</span>
+                        </button>
+                    </form>
+                </div>
+
             </div>
 
         </nav>

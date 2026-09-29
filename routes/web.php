@@ -78,16 +78,36 @@ Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])
 
 Route::prefix('admin')->name('admin.')->group(function () {
 
-    Route::get('/dashboard', [DashboardController::class, 'index'])
-        ->name('dashboard');
+    // Public Admin Routes
+    Route::get('/login', function () {
+        return view('admin.auth.login');
+    })->name('login');
 
-    Route::resource('categories', CategoryController::class)->except(['show']);
-    Route::resource('products', ProductController::class)->except(['show']);
-    Route::resource('products.variants',ProductVariantController::class)->except(['show'])->names('products.variants');
+    Route::post('/login', function (\Illuminate\Http\Request $request) {
+        if ($request->email === 'admin@kathirazhaki.com' && $request->password === 'password') {
+            session(['admin_logged_in' => true]);
+            return redirect()->route('admin.dashboard');
+        }
+        return back()->with('error', 'Invalid credentials');
+    })->name('login.submit');
 
-    Route::get('/inventory', [\App\Http\Controllers\Admin\InventoryController::class, 'index'])->name('inventory.index');
-    Route::get('/customers', [\App\Http\Controllers\Admin\CustomerController::class, 'index'])->name('customers.index');
-    Route::get('/orders', [\App\Http\Controllers\Admin\OrderController::class, 'index'])->name('orders.index');
-    Route::put('/orders/{id}', [\App\Http\Controllers\Admin\OrderController::class, 'update'])->name('orders.update');
+    Route::post('/logout', function () {
+        session()->forget('admin_logged_in');
+        return redirect()->route('admin.login');
+    })->name('logout');
+
+    // Protected Admin Routes
+    Route::middleware(['admin.auth'])->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+        Route::resource('categories', CategoryController::class)->except(['show']);
+        Route::resource('products', ProductController::class)->except(['show']);
+        Route::resource('products.variants',ProductVariantController::class)->except(['show'])->names('products.variants');
+
+        Route::get('/inventory', [\App\Http\Controllers\Admin\InventoryController::class, 'index'])->name('inventory.index');
+        Route::get('/customers', [\App\Http\Controllers\Admin\CustomerController::class, 'index'])->name('customers.index');
+        Route::get('/orders', [\App\Http\Controllers\Admin\OrderController::class, 'index'])->name('orders.index');
+        Route::put('/orders/{id}', [\App\Http\Controllers\Admin\OrderController::class, 'update'])->name('orders.update');
+    });
 
 });

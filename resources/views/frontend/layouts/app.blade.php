@@ -617,6 +617,95 @@
             }
         }
 
+        /* Floating Action Buttons */
+        .floating-action-buttons {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .floating-btn {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 26px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .floating-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            color: #fff;
+        }
+
+        .whatsapp-btn {
+            background-color: #25D366;
+        }
+
+        .whatsapp-btn:hover {
+            background-color: #1ebe58;
+        }
+
+        .whatsapp-btn::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid #25D366;
+            animation: pulse-ring 2s infinite;
+            top: 0;
+            left: 0;
+            box-sizing: border-box;
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        .scroll-to-top {
+            background-color: var(--brand-secondary, #d4af37);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            width: 45px;
+            height: 45px;
+            font-size: 20px;
+            margin-left: auto;
+            /* align to right with WhatsApp btn */
+        }
+
+        .scroll-to-top.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .scroll-to-top:hover {
+            background-color: #b8962e;
+        }
+
     </style>
 
     @stack('styles')
@@ -639,6 +728,40 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     @stack('scripts')
+
+    {{-- Floating Action Buttons --}}
+    <div class="floating-action-buttons">
+        <button id="scrollToTopBtn" class="floating-btn scroll-to-top" title="Go to top">
+            <i class="bi bi-arrow-up"></i>
+        </button>
+        <a href="https://wa.me/+918072000915" target="_blank" class="floating-btn whatsapp-btn" title="Chat on WhatsApp">
+            <i class="bi bi-whatsapp"></i>
+        </a>
+    </div>
+
+    <script>
+        // Scroll to top functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            var scrollToTopBtn = document.getElementById("scrollToTopBtn");
+
+            window.addEventListener("scroll", function() {
+                if (window.pageYOffset > 300) {
+                    scrollToTopBtn.classList.add("show");
+                } else {
+                    scrollToTopBtn.classList.remove("show");
+                }
+            });
+
+            scrollToTopBtn.addEventListener("click", function(e) {
+                e.preventDefault();
+                window.scrollTo({
+                    top: 0
+                    , behavior: "smooth"
+                });
+            });
+        });
+
+    </script>
 
 </body>
 </html>

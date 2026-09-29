@@ -33,7 +33,7 @@
             {{-- ABOUT --}}
             <div class="col-6 col-md-3">
 
-                <h6>About Luna</h6>
+                <h6>About Kathirazhagi</h6>
 
                 <a href="#">Our Story</a>
                 <a href="#">Our Philosophy</a>
