@@ -187,14 +187,9 @@ class ProductController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Product $product)
     {
-        //
-         if ($product->image &&
-            file_exists(public_path($product->image))) {
-
-            unlink(public_path($product->image));
-        }
+        // Image deletion is handled by the Product model's deleting event
 
         $product->delete();
 

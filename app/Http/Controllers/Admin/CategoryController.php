@@ -136,17 +136,21 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        //
+        // Delete all associated products first
+        // This will trigger the Product model's deleting event and clean up images
+        foreach ($category->products as $product) {
+            $product->delete();
+        }
 
         // Delete category image from public folder
-    if ($category->image && file_exists(public_path($category->image))) {
-        unlink(public_path($category->image));
-    }
+        if ($category->image && file_exists(public_path($category->image))) {
+            unlink(public_path($category->image));
+        }
 
-    $category->delete();
+        $category->delete();
 
-    return redirect()
-        ->route('admin.categories.index')
-        ->with('success', 'Category deleted successfully!');
+        return redirect()
+            ->route('admin.categories.index')
+            ->with('success', 'Category and its associated products deleted successfully!');
     }
 }

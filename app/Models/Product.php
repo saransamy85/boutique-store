@@ -54,4 +54,21 @@ class Product extends Model
         }
         return $value;
     }
+
+    protected static function booted()
+    {
+        static::deleting(function ($product) {
+            // Delete main product image
+            if ($product->image && file_exists(public_path($product->image))) {
+                unlink(public_path($product->image));
+            }
+
+            // Delete gallery images
+            foreach ($product->images as $image) {
+                if (file_exists(public_path($image->image_path))) {
+                    unlink(public_path($image->image_path));
+                }
+            }
+        });
+    }
 }
