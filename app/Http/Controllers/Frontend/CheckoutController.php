@@ -165,7 +165,7 @@ class CheckoutController extends Controller
 
             $order = Order::create([
 
-                'order_number' => 'LUNA-' . strtoupper(Str::random(10)),
+                'order_number' => 'KATHIRAZHAGI-' . strtoupper(Str::random(10)),
 
                 'customer_name' => $validated['customer_name'],
                 'email' => $validated['email'],

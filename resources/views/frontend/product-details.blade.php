@@ -244,8 +244,8 @@
                 
                 <div class="d-flex flex-wrap gap-2 mt-3" id="variantThumbnailsContainer">
                     @php
-                        // Collect all unique images
-                        $allImages = collect([$product->image]);
+                        // Collect all unique images (direct product images + variant images)
+                        $allImages = collect($product->all_images);
                         if($product->variants) {
                             foreach($product->variants as $variant) {
                                 if($variant->images) {
@@ -255,7 +255,7 @@
                                 }
                             }
                         }
-                        $allImages = $allImages->unique()->values();
+                        $allImages = $allImages->filter()->unique()->values();
                     @endphp
 
                     @foreach($allImages as $index => $imagePath)
@@ -279,11 +279,20 @@
                     </h1>
 
                     {{-- Product Price --}}
-                    <h3 id="productPrice" class="product-price">
+                    <div class="d-flex align-items-baseline gap-2 mb-2">
+                        <h3 id="productPrice" class="product-price mb-0">
+                            ₹{{ number_format($product->effective_price, 2) }}
+                        </h3>
 
-                        ₹{{ number_format($product->sale_price ?? $product->price, 2) }}
-
-                    </h3>
+                        @if(($product->sale_price !== null && $product->sale_price < $product->price) || ($product->discount !== null && $product->discount > 0))
+                        <span class="product-old-price">
+                            ₹{{ number_format($product->price, 2) }}
+                        </span>
+                        <span class="badge bg-danger">
+                            {{ $product->discount_percent }}% OFF
+                        </span>
+                        @endif
+                    </div>
 
                     {{-- Product Description --}}
                     @if($product->description)
@@ -366,9 +375,31 @@
 
                     @else
 
-                    <p class="text-muted">
-                        Standard product
-                    </p>
+                    {{-- Direct Product Size & Color (without variants) --}}
+                    <div class="d-flex flex-wrap gap-3 mb-3">
+                        @if($product->size)
+                        <div>
+                            <span class="text-muted small d-block mb-1">Size</span>
+                            <span class="badge bg-light text-dark border px-3 py-2 fs-6 fw-normal">{{ $product->size }}</span>
+                        </div>
+                        @endif
+
+                        @if($product->color)
+                        <div>
+                            <span class="text-muted small d-block mb-1">Color</span>
+                            <span class="badge bg-light text-dark border px-3 py-2 fs-6 fw-normal">{{ $product->color }}</span>
+                        </div>
+                        @endif
+                    </div>
+
+                    <div class="mb-3">
+                        <span class="fw-semibold">Availability:</span>
+                        @if($product->stock > 0)
+                        <span class="stock-available ms-1">In Stock ({{ $product->stock }} available)</span>
+                        @else
+                        <span class="stock-unavailable ms-1">Out of Stock</span>
+                        @endif
+                    </div>
 
                     @endif
 

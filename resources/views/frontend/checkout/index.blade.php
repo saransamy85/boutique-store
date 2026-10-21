@@ -1,6 +1,6 @@
 @extends('frontend.layouts.app')
 
-@section('title', 'Checkout | Luna Boutique')
+@section('title', 'Checkout | Kathirazhagi Boutique')
 
 @section('content')
 
@@ -109,9 +109,9 @@
                 {{-- Customer Details --}}
                 <div class="col-lg-7">
 
-                    <div class="checkout-card">
+                    <div class="checkout-card mb-4">
 
-                        <h4>Shipping Information</h4>
+                        <h4 class="mb-4">1. User Details</h4>
 
                         <div class="mb-3">
                             <label class="checkout-label">Full Name *</label>
@@ -138,6 +138,12 @@
                             </div>
 
                         </div>
+
+                    </div>
+
+                    <div class="checkout-card mb-4">
+
+                        <h4 class="mb-4">2. Shipping Address</h4>
 
                         <div class="mb-3">
                             <label class="checkout-label">Address *</label>
@@ -172,12 +178,14 @@
                                 Order Notes (Optional)
                             </label>
 
-                            <textarea name="notes" class="form-control" rows="3">{{ old('notes') }}</textarea>
+                            <textarea name="notes" class="form-control" rows="2">{{ old('notes') }}</textarea>
                         </div>
 
-                        <hr class="my-5">
+                    </div>
 
-                        <h4 class="mb-4">Payment Method</h4>
+                    <div class="checkout-card mb-4">
+
+                        <h4 class="mb-4">3. Payment Method</h4>
 
                         <div class="mb-4">
                             <div class="form-check mb-2">

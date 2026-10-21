@@ -14,6 +14,7 @@ class HomeController extends Controller
     public function index()
 {
     $categories = Category::where('status', 1)
+        ->withCount('products')
         ->latest()
         ->get();
 

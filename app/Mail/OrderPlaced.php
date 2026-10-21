@@ -30,7 +30,7 @@ class OrderPlaced extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Order Confirmation - Kathirazhagi boutique',
+            subject: 'Order Confirmation - Kathirazhagi Boutique',
         );
     }
 

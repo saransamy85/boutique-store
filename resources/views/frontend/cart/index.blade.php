@@ -1,6 +1,6 @@
 @extends('frontend.layouts.app')
 
-@section('title', 'Shopping Bag | Luna Boutique')
+@section('title', 'Shopping Bag | Kathirazhagi Boutique')
 
 @section('content')
 

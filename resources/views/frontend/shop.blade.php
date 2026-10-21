@@ -1,6 +1,6 @@
 @extends('frontend.layouts.app')
 
-@section('title', 'Shop | Luna Boutique')
+@section('title', 'Shop | Kathirazhagi Boutique')
 
 @section('content')
 
@@ -426,6 +426,15 @@
                             {{-- Product Image --}}
                             <div class="shop-product-image-box">
 
+                                @if($product->sale_price !== null && $product->sale_price < $product->price)
+                                    @php
+                                        $discountPercent = round((($product->price - $product->sale_price) / $product->price) * 100);
+                                    @endphp
+                                    <span class="offer-badge-red">
+                                        Extra {{ $discountPercent }}% OFF
+                                    </span>
+                                @endif
+
                                 <a href="{{ route('product.details', $product->slug) }}">
 
                                     <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="shop-product-image">
@@ -474,6 +483,11 @@
                                             ₹{{ number_format($product->price, 2) }}
 
                                         </span>
+
+                                        @php
+                                            $discountPercent = round((($product->price - $product->sale_price) / $product->price) * 100);
+                                        @endphp
+                                        <span class="discount-text-red">{{ $discountPercent }}% OFF</span>
 
                                         @endif
 

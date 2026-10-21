@@ -30,7 +30,7 @@ class CustomerThankYou extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Thank You for Your Order - Kathirazhagi boutique',
+            subject: 'Thank You for Your Order - Kathirazhagi Boutique',
         );
     }
 

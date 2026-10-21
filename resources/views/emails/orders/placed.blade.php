@@ -1,5 +1,5 @@
 <x-mail::message>
-    # Order Confirmation - Kathirazhagi boutique
+    # Order Confirmation - Kathirazhagi Boutique
 
     Hi {{ $order->customer_name }},
 

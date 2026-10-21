@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>@yield('title', 'Kathirazhaki Boutique | Effortless Style')</title>
+    <title>@yield('title', 'Kathirazhagi Boutique | Effortless Style')</title>
     <link rel="icon" type="image/x-icon" href="{{ asset('frontend/images/favicon.ico') }}">
 
-    <meta name="description" content="@yield('meta_description', 'Discover timeless fashion and effortless everyday style at Luna Boutique.')">
+    <meta name="description" content="@yield('meta_description', 'Discover timeless fashion and effortless everyday style at Kathirazhagi Boutique.')">
 
     {{-- Bootstrap --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -258,7 +258,7 @@
         }
 
         /* ===================================
-   LUNA BOUTIQUE HOMEPAGE
+   KATHIRAZHAGI BOUTIQUE HOMEPAGE
 =================================== */
 
         /* Hero Section */
@@ -376,23 +376,35 @@
             height: 100%;
             border: none;
             background: transparent;
+            transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .luna-product-card:hover {
+            transform: translateY(-8px);
         }
 
         .luna-product-img-wrap {
             position: relative;
             overflow: hidden;
             background: #f3f0e9;
+            border-radius: 8px;
+            transition: box-shadow 0.4s ease, border-radius 0.4s ease;
+        }
+
+        .luna-product-card:hover .luna-product-img-wrap {
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
         }
 
         .luna-product-img {
             width: 100%;
             height: 270px;
             object-fit: cover;
-            transition: transform .5s ease;
+            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         .luna-product-card:hover .luna-product-img {
-            transform: scale(1.05);
+            transform: scale(1.08);
         }
 
         .luna-product-badge {
@@ -405,6 +417,26 @@
             font-size: 9px;
             text-transform: uppercase;
             letter-spacing: .5px;
+        }
+
+        .offer-badge-red {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            background: #ff0000;
+            color: #fff;
+            padding: 4px 8px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            z-index: 2;
+        }
+
+        .discount-text-red {
+            color: #ff0000;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 5px;
         }
 
         .luna-product-info {

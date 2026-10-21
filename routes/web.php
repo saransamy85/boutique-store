@@ -53,7 +53,7 @@ Route::post('/wishlist/move-to-cart/{product}', [WishlistController::class, 'mov
 
 
 // =====================================
-// LUNA BOUTIQUE - WISHLIST
+// KATHIRAZHAGI BOUTIQUE - WISHLIST
 // =====================================
 
 Route::get('/wishlist', [WishlistController::class, 'index'])
@@ -104,6 +104,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
         Route::resource('categories', CategoryController::class)->except(['show']);
+        Route::delete('products/{product}/images/{image}', [ProductController::class, 'destroyImage'])->name('products.images.destroy');
         Route::resource('products', ProductController::class)->except(['show']);
         Route::resource('products.variants',ProductVariantController::class)->except(['show'])->names('products.variants');
 

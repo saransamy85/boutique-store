@@ -67,23 +67,45 @@
                     <td>{{ $products->firstItem() + $loop->index }}</td>
 
                     <td>
-                        @if($product->image)
-                        <img src="{{ asset($product->image) }}" width="55" height="55" class="rounded" style="object-fit:cover">
-                        @else
-                        <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width:55px;height:55px">
-                            <i class="bi bi-image fs-4 text-muted"></i>
+                        <div class="position-relative d-inline-block">
+                            @if($product->image)
+                            <img src="{{ asset($product->image) }}" width="55" height="55" class="rounded" style="object-fit:cover">
+                            @else
+                            <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width:55px;height:55px">
+                                <i class="bi bi-image fs-4 text-muted"></i>
+                            </div>
+                            @endif
+
+                            @if($product->images->count() > 1)
+                            <span class="position-absolute bottom-0 end-0 badge rounded-pill bg-dark" style="font-size: 10px;" title="{{ $product->images->count() }} images">
+                                <i class="bi bi-images"></i> {{ $product->images->count() }}
+                            </span>
+                            @endif
                         </div>
-                        @endif
                     </td>
 
                     <td>
                         <div class="fw-semibold">{{ $product->name }}</div>
 
-                        @if($product->is_featured)
-                        <span class="badge bg-warning text-dark">
-                            Featured
-                        </span>
-                        @endif
+                        <div class="d-flex flex-wrap gap-1 mt-1">
+                            @if($product->size)
+                            <span class="badge bg-light text-dark border">
+                                Size: {{ $product->size }}
+                            </span>
+                            @endif
+
+                            @if($product->color)
+                            <span class="badge bg-light text-dark border">
+                                Color: {{ $product->color }}
+                            </span>
+                            @endif
+
+                            @if($product->is_featured)
+                            <span class="badge bg-warning text-dark">
+                                Featured
+                            </span>
+                            @endif
+                        </div>
                     </td>
 
                     <td>{{ $product->category->name }}</td>
@@ -91,7 +113,7 @@
                     <td>{{ $product->sku }}</td>
 
                     <td>
-                        @if($product->sale_price !== null)
+                        @if($product->sale_price !== null && $product->sale_price < $product->price)
                         <span class="fw-bold">
                             ₹{{ number_format((float)$product->sale_price, 2) }}
                         </span>
@@ -99,8 +121,19 @@
                         <small class="text-muted text-decoration-line-through">
                             ₹{{ number_format((float)$product->price, 2) }}
                         </small>
+                        @if($product->discount_percent > 0)
+                        <span class="badge bg-danger ms-1" style="font-size: 10px;">
+                            {{ $product->discount_percent }}% OFF
+                        </span>
+                        @endif
                         @else
                         ₹{{ number_format((float)$product->price, 2) }}
+                        @if($product->discount > 0)
+                        <br>
+                        <span class="badge bg-danger" style="font-size: 10px;">
+                            {{ round($product->discount) }}% OFF
+                        </span>
+                        @endif
                         @endif
                     </td>
 
@@ -115,7 +148,7 @@
                     </td>
 
                     <td>
-                        @if($product->status)
+                        @if($product->state === 'active' || $product->status)
                         <span class="badge bg-success">Active</span>
                         @else
                         <span class="badge bg-secondary">Inactive</span>
