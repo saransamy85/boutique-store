@@ -80,8 +80,15 @@ class WishlistController extends Controller
         }
 
         $cart = session()->get('luna_cart', []);
+        $cartKey = $product->id . '_' . substr(md5($product->image ?? 'default'), 0, 8);
 
-        $currentQuantity = (int) ($cart[$product->id] ?? 0);
+        $currentQuantity = 0;
+        if (isset($cart[$cartKey])) {
+            $currentQuantity = is_array($cart[$cartKey]) ? (int)($cart[$cartKey]['quantity'] ?? 0) : (int)$cart[$cartKey];
+        } elseif (isset($cart[$product->id])) {
+            $currentQuantity = is_array($cart[$product->id]) ? (int)($cart[$product->id]['quantity'] ?? 0) : (int)$cart[$product->id];
+            unset($cart[$product->id]);
+        }
 
         if (($currentQuantity + 1) > $product->stock) {
             return back()->with(
@@ -90,7 +97,12 @@ class WishlistController extends Controller
             );
         }
 
-        $cart[$product->id] = $currentQuantity + 1;
+        $cart[$cartKey] = [
+            'product_id' => $product->id,
+            'variant_id' => null,
+            'quantity' => $currentQuantity + 1,
+            'selected_image' => $product->image,
+        ];
 
         session()->put('luna_cart', $cart);
 

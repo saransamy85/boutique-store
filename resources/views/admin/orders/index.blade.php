@@ -151,10 +151,15 @@
                                         @forelse($order->items as $item)
                                             <li class="mb-2">
                                                 <div class="d-flex justify-content-between align-items-center">
-                                                    <div>
-                                                        <span class="fw-semibold">{{ $item->product_name }}</span>
-                                                        <br>
-                                                        <span class="text-muted">Qty: {{ $item->quantity }} x ₹{{ number_format($item->price, 2) }}</span>
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        @if($item->image)
+                                                        <img src="{{ asset($item->image) }}" alt="{{ $item->product_name }}" style="width: 42px; height: 42px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;">
+                                                        @endif
+                                                        <div>
+                                                            <span class="fw-semibold">{{ $item->product_name }}</span>
+                                                            <br>
+                                                            <span class="text-muted">Qty: {{ $item->quantity }} x ₹{{ number_format($item->price, 2) }}</span>
+                                                        </div>
                                                     </div>
                                                     <span class="fw-bold">₹{{ number_format($item->total, 2) }}</span>
                                                 </div>

@@ -95,7 +95,11 @@
             {{-- RIGHT ICONS --}}
 
             @php
-            $cartCount = array_sum(session()->get('luna_cart', []));
+            $rawCart = session()->get('luna_cart', []);
+            $cartCount = 0;
+            foreach ($rawCart as $ci) {
+                $cartCount += is_array($ci) ? (int)($ci['quantity'] ?? 0) : (int)$ci;
+            }
             $wishlistCount = count(session()->get('luna_wishlist', []));
             @endphp
 

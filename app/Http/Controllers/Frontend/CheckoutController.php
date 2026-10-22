@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\Mail;
 
 class CheckoutController extends Controller
 {
-    //
     // Display Checkout Page
     public function index()
     {
@@ -26,32 +25,55 @@ class CheckoutController extends Controller
                 ->with('error', 'Your shopping cart is empty.');
         }
 
-        $products = Product::whereIn('id', array_keys($cart))
+        // Collect product IDs
+        $productIds = [];
+        foreach ($cart as $key => $item) {
+            $productIds[] = is_array($item) ? ($item['product_id'] ?? $key) : $key;
+        }
+        $productIds = array_unique(array_filter($productIds));
+
+        $products = Product::with(['category', 'variants.images'])
+            ->whereIn('id', $productIds)
             ->get()
             ->keyBy('id');
 
         $cartItems = [];
         $subtotal = 0;
 
-        foreach ($cart as $productId => $quantity) {
+        foreach ($cart as $cartKey => $item) {
+            $productId = is_array($item) ? ($item['product_id'] ?? $cartKey) : $cartKey;
+            $quantity = is_array($item) ? (int)($item['quantity'] ?? 0) : (int)$item;
+            $selectedImage = is_array($item) ? ($item['selected_image'] ?? null) : null;
+            $variantId = is_array($item) ? ($item['variant_id'] ?? null) : null;
 
-            if (!isset($products[$productId])) {
+            if ($quantity < 1 || !isset($products[$productId])) {
                 continue;
             }
 
             $product = $products[$productId];
 
-            $price = $product->sale_price ?? $product->price;
+            $variant = null;
+            if ($variantId && $product->variants) {
+                $variant = $product->variants->firstWhere('id', $variantId);
+            }
+
+            $price = (float) (
+                $variant?->price ?? $product->sale_price ?? $product->price
+            );
 
             $itemTotal = $price * $quantity;
-
             $subtotal += $itemTotal;
 
+            $displayImage = $selectedImage ?: ($variant?->images?->first()?->image_path ?: $product->image);
+
             $cartItems[] = [
+                'cart_key' => $cartKey,
                 'product' => $product,
+                'variant' => $variant,
                 'quantity' => $quantity,
                 'price' => $price,
                 'item_total' => $itemTotal,
+                'selected_image' => $displayImage,
             ];
         }
 
@@ -60,9 +82,8 @@ class CheckoutController extends Controller
                 ->with('error', 'Your cart has no valid products.');
         }
 
-        // Keep shipping free for now
+        // Complimentary shipping
         $shipping = 0;
-
         $total = $subtotal + $shipping;
 
         return view('frontend.checkout.index', compact(
@@ -77,7 +98,6 @@ class CheckoutController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-
             'customer_name' => 'required|string|max:150',
             'email' => 'required|email|max:150',
             'phone' => 'required|string|max:20',
@@ -99,7 +119,7 @@ class CheckoutController extends Controller
                 ->route('cart.index')
                 ->with('error', 'Your shopping cart is empty.');
         }
-        
+
         $screenshotPath = null;
         if ($validated['payment_method'] === 'online' && $request->hasFile('payment_screenshot')) {
             $file = $request->file('payment_screenshot');
@@ -109,15 +129,29 @@ class CheckoutController extends Controller
         }
 
         $order = DB::transaction(function () use ($cart, $validated, $screenshotPath) {
+            $productIds = [];
+            foreach ($cart as $key => $item) {
+                $productIds[] = is_array($item) ? ($item['product_id'] ?? $key) : $key;
+            }
+            $productIds = array_unique(array_filter($productIds));
 
-            $products = Product::whereIn('id', array_keys($cart))
+            $products = Product::with(['category', 'variants.images'])
+                ->whereIn('id', $productIds)
                 ->get()
                 ->keyBy('id');
 
             $subtotal = 0;
             $items = [];
 
-            foreach ($cart as $productId => $quantity) {
+            foreach ($cart as $cartKey => $item) {
+                $productId = is_array($item) ? ($item['product_id'] ?? $cartKey) : $cartKey;
+                $quantity = is_array($item) ? (int)($item['quantity'] ?? 0) : (int)$item;
+                $selectedImage = is_array($item) ? ($item['selected_image'] ?? null) : null;
+                $variantId = is_array($item) ? ($item['variant_id'] ?? null) : null;
+
+                if ($quantity < 1) {
+                    continue;
+                }
 
                 if (!isset($products[$productId])) {
                     throw ValidationException::withMessages([
@@ -127,64 +161,76 @@ class CheckoutController extends Controller
 
                 $product = $products[$productId];
 
-                $price = $product->sale_price ?? $product->price;
+                $variant = null;
+                if ($variantId && $product->variants) {
+                    $variant = $product->variants->firstWhere('id', $variantId);
+                }
+
+                $price = (float) (
+                    $variant?->price ?? $product->sale_price ?? $product->price
+                );
 
                 $itemTotal = $price * $quantity;
-
                 $subtotal += $itemTotal;
+
+                $displayImage = $selectedImage ?: ($variant?->images?->first()?->image_path ?: $product->image);
+
+                $productDisplayName = $product->name;
+                if ($variant) {
+                    $variantDetails = array_filter([$variant->color, $variant->size]);
+                    if (!empty($variantDetails)) {
+                        $productDisplayName .= ' (' . implode(' / ', $variantDetails) . ')';
+                    }
+                }
 
                 $items[] = [
                     'product_id' => $product->id,
-                    'product_name' => $product->name,
-                    'sku' => $product->sku ?? null,
+                    'product_name' => $productDisplayName,
+                    'sku' => $variant?->sku ?? $product->sku ?? null,
+                    'image' => $displayImage,
                     'price' => $price,
                     'quantity' => $quantity,
                     'total' => $itemTotal,
                 ];
 
-                // Decrement stock
-                if ($product->variants()->count() > 0) {
+                // Decrement stock accurately
+                if ($variant) {
+                    $variant->decrement('stock', min((int)$variant->stock, $quantity));
+                } elseif ($product->variants()->count() > 0) {
                     $remaining = $quantity;
-                    foreach ($product->variants as $variant) {
+                    foreach ($product->variants as $v) {
                         if ($remaining <= 0) break;
-                        if ($variant->stock > 0) {
-                            $take = min($variant->stock, $remaining);
-                            $variant->stock -= $take;
-                            $variant->save();
+                        if ($v->stock > 0) {
+                            $take = min($v->stock, $remaining);
+                            $v->stock -= $take;
+                            $v->save();
                             $remaining -= $take;
                         }
                     }
                 } else {
-                    $product->stock -= $quantity;
-                    $product->save();
+                    $product->decrement('stock', min((int)$product->stock, $quantity));
                 }
             }
 
-            // Free shipping for now
+            // Complimentary shipping
             $shipping = 0;
 
             $order = Order::create([
-
                 'order_number' => 'KATHIRAZHAGI-' . strtoupper(Str::random(10)),
-
                 'customer_name' => $validated['customer_name'],
                 'email' => $validated['email'],
                 'phone' => $validated['phone'],
-
                 'address' => $validated['address'],
                 'city' => $validated['city'],
                 'state' => $validated['state'],
                 'pincode' => $validated['pincode'],
-
                 'subtotal' => $subtotal,
                 'shipping_charge' => $shipping,
                 'total_amount' => $subtotal + $shipping,
-
                 'payment_method' => $validated['payment_method'],
                 'payment_status' => $validated['payment_method'] === 'online' ? 'uploaded' : 'pending',
                 'payment_screenshot' => $screenshotPath,
                 'order_status' => 'pending',
-
                 'notes' => $validated['notes'] ?? null,
             ]);
 
@@ -196,7 +242,7 @@ class CheckoutController extends Controller
         try {
             // Admin notification
             Mail::to('cloudinfo2020@gmail.com')->send(new OrderPlaced($order));
-            
+
             // Customer notification
             Mail::to($order->email)->send(new \App\Mail\CustomerThankYou($order));
         } catch (\Exception $e) {
@@ -206,8 +252,7 @@ class CheckoutController extends Controller
         // Clear cart only after successful order creation
         session()->forget('luna_cart');
 
-        return redirect()
-            ->route('checkout.success', $order->id);
+        return redirect()->route('checkout.success', $order->id);
     }
 
     // Order Confirmation

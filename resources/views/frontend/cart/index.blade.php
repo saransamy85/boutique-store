@@ -118,8 +118,11 @@ $brand = 'Kathirazhagi Boutique';
                             {{-- Product Thumbnail --}}
                             <div class="col-3 col-sm-2">
                                 <a href="{{ route('product.details', $item['product']->slug) }}" class="d-block rounded-3 overflow-hidden border border-gold-subtle">
-                                    @if($item['product']->image)
-                                    <img src="{{ asset($item['product']->image) }}" 
+                                    @php
+                                        $displayImg = $item['selected_image'] ?? $item['product']->image;
+                                    @endphp
+                                    @if($displayImg)
+                                    <img src="{{ asset($displayImg) }}" 
                                          alt="{{ $item['product']->name }}" 
                                          class="cart-item-img img-fluid">
                                     @else
@@ -140,6 +143,20 @@ $brand = 'Kathirazhagi Boutique';
                                         {{ $item['product']->name }}
                                     </a>
                                 </h5>
+                                @if(isset($item['variant']) && $item['variant'])
+                                <div class="d-flex flex-wrap gap-2 my-1">
+                                    @if($item['variant']->color)
+                                    <span class="badge bg-cream-silk text-purple-deep border border-gold-light small">
+                                        <i class="bi bi-palette text-gold me-1"></i> {{ $item['variant']->color }}
+                                    </span>
+                                    @endif
+                                    @if($item['variant']->size)
+                                    <span class="badge bg-cream-silk text-purple-deep border border-gold-light small">
+                                        <i class="bi bi-rulers text-gold me-1"></i> {{ $item['variant']->size }}
+                                    </span>
+                                    @endif
+                                </div>
+                                @endif
                                 @if($item['product']->sku)
                                 <span class="text-muted small d-block mb-1">SKU: {{ $item['product']->sku }}</span>
                                 @endif
@@ -153,12 +170,13 @@ $brand = 'Kathirazhagi Boutique';
                                 <form action="{{ route('cart.update', $item['product']->id) }}" method="POST" class="d-flex align-items-center gap-2">
                                     @csrf
                                     @method('PATCH')
+                                    <input type="hidden" name="cart_key" value="{{ $item['cart_key'] ?? $item['product']->id }}">
                                     <div class="cart-qty-wrap d-flex align-items-center border border-gold-light rounded-pill p-1">
                                         <input type="number" 
                                                name="quantity" 
                                                value="{{ $item['quantity'] }}" 
                                                min="1" 
-                                               max="{{ $item['product']->stock }}" 
+                                               max="{{ isset($item['variant']) && $item['variant'] ? $item['variant']->stock : $item['product']->stock }}" 
                                                class="form-control form-control-sm text-center border-0 bg-transparent fw-bold text-purple-deep" 
                                                style="width: 50px;" 
                                                required>
@@ -177,6 +195,7 @@ $brand = 'Kathirazhagi Boutique';
                                 <form action="{{ route('cart.remove', $item['product']->id) }}" method="POST">
                                     @csrf
                                     @method('DELETE')
+                                    <input type="hidden" name="cart_key" value="{{ $item['cart_key'] ?? $item['product']->id }}">
                                     <button type="submit" class="btn-cart-remove" title="Remove from bag" aria-label="Remove item">
                                         <i class="bi bi-trash3"></i>
                                     </button>

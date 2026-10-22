@@ -111,7 +111,7 @@ $showDiscountBadge = $hasDiscount && $discountPercent >= 1;
                     <div class="gallery-thumbnails-strip mt-3" id="variantThumbnailsContainer">
                         @foreach($allImages as $index => $imagePath)
                         <div class="thumb-card {{ $index === 0 ? 'active' : '' }}" 
-                             onclick="switchShowcaseImage('{{ asset($imagePath) }}', this)">
+                             onclick="switchShowcaseImage('{{ asset($imagePath) }}', this, '{{ $imagePath }}')">
                             <img src="{{ asset($imagePath) }}" 
                                  alt="Thumbnail {{ $index + 1 }}" 
                                  class="variant-thumbnail-img">
@@ -293,6 +293,7 @@ $showDiscountBadge = $hasDiscount && $discountPercent >= 1;
                     <form action="{{ route('cart.add', $product->id) }}" method="POST" id="addToCartForm" class="mb-4">
                         @csrf
                         <input type="hidden" name="variant_id" id="selectedVariantId">
+                        <input type="hidden" name="selected_image" id="selectedImageInput" value="{{ $product->image }}">
 
                         <div class="action-bar-row d-flex flex-wrap align-items-center gap-3">
                             {{-- Luxury Quantity Stepper --}}
@@ -1422,7 +1423,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 'color' => $variant->color,
                 'price' => $variant->price ?? $product->sale_price ?? $product->price,
                 'stock' => (int) $variant->stock,
-                'images' => $variant->images->pluck('image_path')->map(fn($path) => asset($path))->toArray()
+                'images' => $variant->images->pluck('image_path')->map(fn($path) => asset($path))->toArray(),
+                'raw_images' => $variant->images->pluck('image_path')->toArray(),
             ];
         })->values();
     @endphp
@@ -1433,6 +1435,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const selectedColorText = document.getElementById('selectedColor');
     const selectedSizeText = document.getElementById('selectedSize');
     const selectedVariantInput = document.getElementById('selectedVariantId');
+    const selectedImageInput = document.getElementById('selectedImageInput');
     const productPrice = document.getElementById('productPrice');
     const stockStatus = document.getElementById('stockStatus');
     const addToCartBtn = document.getElementById('addToCartBtn');
@@ -1457,11 +1460,20 @@ document.addEventListener('DOMContentLoaded', function() {
         if (selectedSize) matchingVariants = matchingVariants.filter(v => v.size === selectedSize);
 
         let imagesToShow = [];
+        let rawImagesToShow = [];
         matchingVariants.forEach(v => {
-            if (v.images && v.images.length > 0) imagesToShow.push(...v.images);
+            if (v.images && v.images.length > 0) {
+                imagesToShow.push(...v.images);
+                if (v.raw_images) rawImagesToShow.push(...v.raw_images);
+            }
         });
         imagesToShow = [...new Set(imagesToShow)];
-        if (imagesToShow.length === 0) imagesToShow = ['{{ asset($product->image) }}'];
+        rawImagesToShow = [...new Set(rawImagesToShow)];
+
+        if (imagesToShow.length === 0) {
+            imagesToShow = ['{{ asset($product->image) }}'];
+            rawImagesToShow = ['{{ $product->image }}'];
+        }
 
         const thumbnailsContainer = document.getElementById('variantThumbnailsContainer');
         const mainImage = document.getElementById('mainProductImage');
@@ -1470,11 +1482,15 @@ document.addEventListener('DOMContentLoaded', function() {
             thumbnailsContainer.classList.remove('d-none');
             thumbnailsContainer.innerHTML = '';
             mainImage.src = imagesToShow[0];
+            if (selectedImageInput) {
+                selectedImageInput.value = rawImagesToShow[0] || imagesToShow[0];
+            }
 
             imagesToShow.forEach((imgSrc, idx) => {
+                const rawPath = rawImagesToShow[idx] || imgSrc;
                 const card = document.createElement('div');
                 card.className = 'thumb-card' + (idx === 0 ? ' active' : '');
-                card.onclick = function() { switchShowcaseImage(imgSrc, this); };
+                card.onclick = function() { switchShowcaseImage(imgSrc, this, rawPath); };
 
                 const img = document.createElement('img');
                 img.src = imgSrc;
@@ -1487,6 +1503,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 thumbnailsContainer.appendChild(card);
             });
+        } else if (imagesToShow.length === 1) {
+            mainImage.src = imagesToShow[0];
+            if (selectedImageInput) {
+                selectedImageInput.value = rawImagesToShow[0] || imagesToShow[0];
+            }
+            if (thumbnailsContainer) thumbnailsContainer.classList.add('d-none');
         }
 
         if (!variant) {
@@ -1572,7 +1594,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Switch Main Showcase Image
-function switchShowcaseImage(src, cardEl) {
+function switchShowcaseImage(src, cardEl, rawPath) {
     const mainImg = document.getElementById('mainProductImage');
     if (mainImg) {
         mainImg.style.opacity = '0.3';
@@ -1583,6 +1605,11 @@ function switchShowcaseImage(src, cardEl) {
     }
     document.querySelectorAll('.thumb-card').forEach(c => c.classList.remove('active'));
     if (cardEl) cardEl.classList.add('active');
+
+    const selectedImgInput = document.getElementById('selectedImageInput');
+    if (selectedImgInput) {
+        selectedImgInput.value = rawPath || src;
+    }
 }
 
 // Handle Wishlist Heart Click

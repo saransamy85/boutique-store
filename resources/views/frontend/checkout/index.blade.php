@@ -378,11 +378,20 @@ $brand = 'Kathirazhagi Boutique';
                             <div class="checkout-items-list mb-3">
                                 @foreach($cartItems as $item)
                                 <div class="checkout-item-row d-flex align-items-center gap-3 py-3 border-bottom border-gold-subtle">
-                                    {{-- Product Thumbnail --}}
+                                    {{-- Product Thumbnail with selected image --}}
                                     <div class="checkout-item-thumb rounded-3 overflow-hidden border border-gold-light flex-shrink-0">
-                                        <img src="{{ asset($item['product']->image) }}" 
+                                        @php
+                                            $checkoutImg = $item['selected_image'] ?? $item['product']->image;
+                                        @endphp
+                                        @if($checkoutImg)
+                                        <img src="{{ asset($checkoutImg) }}" 
                                              alt="{{ $item['product']->name }}" 
                                              class="item-img img-fluid">
+                                        @else
+                                        <div class="d-flex align-items-center justify-content-center bg-cream-silk" style="width: 56px; height: 56px;">
+                                            <i class="bi bi-image text-gold"></i>
+                                        </div>
+                                        @endif
                                     </div>
 
                                     {{-- Product Name & Qty --}}
@@ -390,6 +399,12 @@ $brand = 'Kathirazhagi Boutique';
                                         <h6 class="item-title mb-1 text-purple-deep">
                                             {{ $item['product']->name }}
                                         </h6>
+                                        @if(isset($item['variant']) && $item['variant'])
+                                        <div class="text-muted small mb-1">
+                                            @if($item['variant']->color)<span>Shade: <strong>{{ $item['variant']->color }}</strong></span>@endif
+                                            @if($item['variant']->size)<span class="ms-1">• Size: <strong>{{ $item['variant']->size }}</strong></span>@endif
+                                        </div>
+                                        @endif
                                         <div class="item-meta d-flex align-items-center gap-2 text-muted small">
                                             <span>Qty: <strong>{{ $item['quantity'] }}</strong></span>
                                             <span>•</span>
