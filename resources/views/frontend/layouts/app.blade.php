@@ -16,7 +16,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
     {{-- Google Fonts --}}
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
         :root {
@@ -716,28 +718,55 @@
             }
         }
 
-        .scroll-to-top {
-            background-color: var(--brand-secondary, #d4af37);
+        .scroll-progress-wrap {
+            position: relative;
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             opacity: 0;
             visibility: hidden;
             transform: translateY(20px);
-            width: 45px;
-            height: 45px;
-            font-size: 20px;
+            transition: all 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
             margin-left: auto;
-            /* align to right with WhatsApp btn */
         }
 
-        .scroll-to-top.show {
+        .scroll-progress-wrap.show {
             opacity: 1;
             visibility: visible;
             transform: translateY(0);
         }
 
-        .scroll-to-top:hover {
-            background-color: #b8962e;
+        .progress-ring {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform: rotate(-90deg);
+            pointer-events: none;
         }
 
+        .progress-ring-bar {
+            transition: stroke-dashoffset 0.15s ease-out;
+        }
+
+        .scroll-to-top {
+            background: linear-gradient(135deg, var(--brand-primary), #451b47);
+            color: var(--brand-secondary, #d4af37);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            width: 44px;
+            height: 44px;
+            font-size: 18px;
+            margin: 0;
+            box-shadow: 0 6px 20px rgba(46, 16, 47, 0.25);
+        }
+
+        .scroll-to-top:hover {
+            background: var(--brand-secondary, #d4af37);
+            color: var(--brand-primary);
+            border-color: var(--brand-secondary);
+            transform: scale(1.06);
+        }
     </style>
 
     @stack('styles')
@@ -763,36 +792,58 @@
 
     {{-- Floating Action Buttons --}}
     <div class="floating-action-buttons">
-        <button id="scrollToTopBtn" class="floating-btn scroll-to-top" title="Go to top">
-            <i class="bi bi-arrow-up"></i>
-        </button>
+        <div class="scroll-progress-wrap" id="scrollProgressWrap">
+            <svg class="progress-ring" width="52" height="52" viewBox="0 0 52 52">
+                <circle class="progress-ring-bg" stroke="rgba(212, 175, 55, 0.25)" stroke-width="2.5" fill="transparent" r="23" cx="26" cy="26"/>
+                <circle class="progress-ring-bar" id="scrollProgressBar" stroke="var(--brand-secondary, #d4af37)" stroke-width="2.5" stroke-dasharray="144.5" stroke-dashoffset="144.5" stroke-linecap="round" fill="transparent" r="23" cx="26" cy="26"/>
+            </svg>
+            <button id="scrollToTopBtn" class="floating-btn scroll-to-top" title="Go to top">
+                <i class="bi bi-arrow-up"></i>
+            </button>
+        </div>
         <a href="https://wa.me/+918072000915" target="_blank" class="floating-btn whatsapp-btn" title="Chat on WhatsApp">
             <i class="bi bi-whatsapp"></i>
         </a>
     </div>
 
     <script>
-        // Scroll to top functionality
+        // Scroll to top functionality & Scroll progress
         document.addEventListener('DOMContentLoaded', function() {
+            var scrollWrap = document.getElementById("scrollProgressWrap");
+            var progressBar = document.getElementById("scrollProgressBar");
             var scrollToTopBtn = document.getElementById("scrollToTopBtn");
+            var circumference = 2 * Math.PI * 23; // r = 23
 
-            window.addEventListener("scroll", function() {
-                if (window.pageYOffset > 300) {
-                    scrollToTopBtn.classList.add("show");
-                } else {
-                    scrollToTopBtn.classList.remove("show");
+            function updateScrollProgress() {
+                var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                var docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                var scrollPercent = docHeight > 0 ? scrollTop / docHeight : 0;
+                var offset = circumference - (scrollPercent * circumference);
+
+                if (progressBar) {
+                    progressBar.style.strokeDashoffset = Math.max(0, Math.min(circumference, offset));
                 }
-            });
 
-            scrollToTopBtn.addEventListener("click", function(e) {
-                e.preventDefault();
-                window.scrollTo({
-                    top: 0
-                    , behavior: "smooth"
+                if (scrollTop > 260) {
+                    scrollWrap.classList.add("show");
+                } else {
+                    scrollWrap.classList.remove("show");
+                }
+            }
+
+            window.addEventListener("scroll", updateScrollProgress, { passive: true });
+            updateScrollProgress();
+
+            if (scrollToTopBtn) {
+                scrollToTopBtn.addEventListener("click", function(e) {
+                    e.preventDefault();
+                    window.scrollTo({
+                        top: 0,
+                        behavior: "smooth"
+                    });
                 });
-            });
+            }
         });
-
     </script>
 
 </body>

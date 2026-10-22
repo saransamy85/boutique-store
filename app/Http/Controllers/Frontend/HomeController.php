@@ -108,7 +108,7 @@ class HomeController extends Controller
 
     $products = $query->paginate(12)->withQueryString();
 
-    $categories = Category::orderBy('name')->get();
+    $categories = Category::withCount('products')->orderBy('name')->get();
 
     return view('frontend.shop', compact('products', 'categories'));
 }
